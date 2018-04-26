@@ -25,8 +25,18 @@ CookieStorage.prototype.getCookieValue = function (name) {
     return new Promise(function(resolve, reject) {
         self.storage.findCookie(CONSTANTS.HOSTNAME, '/', name, function(err, cookie) {
             if (err) return reject(err);
-            if (!_.isObject(cookie)) return reject(new Exceptions.CookieNotValidError(name));
-            resolve(cookie);
+
+            if (!_.isObject(cookie)) {
+
+                self.storage.findCookie('instagram.com', '/', name, function(err, cookie) {
+                    if (err) return reject(err);
+                    if (!_.isObject(cookie)) return reject(new Exceptions.CookieNotValidError(name));
+                    resolve(cookie);
+                });
+
+            } else {
+                resolve(cookie);
+            }
         })
     });
 };
@@ -45,7 +55,14 @@ CookieStorage.prototype.getCookies = function () {
     var self = this;
     return new Promise(function(resolve, reject) {
         self.storage.findCookies(CONSTANTS.HOSTNAME, '/', function(err, cookies){
-            if (err) return reject(err);
+            // if (err) return reject(err);
+
+            if (err) {
+                self.storage.findCookies('instagram.com', '/', function(err, cookies) {
+                    if (err) return reject(err);
+                    resolve(cookies || []);
+                });
+            }
             resolve(cookies || []);
         })
     });
@@ -81,7 +98,12 @@ CookieStorage.prototype.removeCheckpointStep = function () {
     var self = this;
     return new Promise(function(resolve, reject) {
         self.storage.removeCookie(CONSTANTS.HOSTNAME, '/', 'checkpoint_step', function(err){
-            if (err) return reject(err);
+            if (err) {
+                self.storage.removeCookie('instagram.com', '/', 'checkpoint_step', function(err) {
+                    if (err) return reject(err);
+                    resolve();
+                });
+            }
             resolve();
         })
     });
