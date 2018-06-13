@@ -117,17 +117,18 @@ Session.prototype.destroy = function () {
         .generateUUID()
         .send()
         .then(function (response) {
-          that._cookiesStore.destroy();
-          delete that._cookiesStore;
-          return response;
+            that._cookiesStore.destroy();
+            delete that._cookiesStore;
+            return response;
         })
 };
 
 
-Session.login = function(session, username, password) {
+Session.login = function(session, username, password, ProxyRequestsObj) {
     return new Request(session)
         .setResource('login')
         .setMethod('POST')
+        .setProxyRequestObj(ProxyRequestsObj)        
         .generateUUID()
         .setData({
             username: username,
@@ -146,27 +147,15 @@ Session.login = function(session, username, password) {
             throw error;
         })
         .then(function () {
-            return [session, QE.sync(session)];
+            return [session, QE.sync(session, ProxyRequestsObj)];
         })
         .spread(function (session) {
-            var autocomplete = Relationship.autocompleteUserList(session)
+            var autocomplete = Relationship.autocompleteUserList(session, ProxyRequestsObj)
                 .catch(Exceptions.RequestsLimitError, function() {
                     // autocompleteUserList has ability to fail often
                     return false;
                 })
             return [session, autocomplete];
-        })
-        .spread(function (session) {
-            return [session, new Timeline(session).get()];
-        })
-        .spread(function (session) {
-            return [session, Thread.recentRecipients(session)];
-        })
-        .spread(function (session) {
-            return [session, new Inbox(session).get()];
-        })
-        .spread(function (session) {
-            return [session, Megaphone.logSeenMainFeed(session)];
         })
         .spread(function(session) {
             return session;
@@ -187,7 +176,7 @@ Session.login = function(session, username, password) {
         
 }
 
-Session.create = function(device, storage, username, password, proxy) {
+Session.create = function(device, storage, username, password, proxy, ProxyRequestsObj) {
     var that = this;
     var session = new Session(device, storage);
     if(_.isString(proxy) && !_.isEmpty(proxy))
@@ -198,7 +187,7 @@ Session.create = function(device, storage, username, password, proxy) {
         })
         .catch(Exceptions.CookieNotValidError, function() {
             // We either not have valid cookes or authentication is not fain!
-            return Session.login(session, username, password)
+            return Session.login(session, username, password, ProxyRequestsObj)
         })
 }
 

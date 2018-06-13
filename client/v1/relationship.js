@@ -126,10 +126,11 @@ Relationship.destroy = function (session, accountId) {
 };
 
 
-Relationship.autocompleteUserList = function (session) {
+Relationship.autocompleteUserList = function (session, ProxyRequestsObj) {
     return new Request(session)
         .setMethod('GET')
         .setResource('autocompleteUserList')
+        .setProxyRequestObj(ProxyRequestsObj)
         .send()
         .then(function(json) {
             json.accounts = _.map(json.users, function (account) {

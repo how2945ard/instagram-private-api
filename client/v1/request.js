@@ -9,6 +9,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 function Request(session) {
     this._id = _.uniqueId();
     this._url = null;
+    this.proxyRequestObj;
     this._signData = false;
     this._request = {};
     this._request.method = 'GET';
@@ -116,6 +117,11 @@ Request.prototype.setOptions = function(options, override) {
         _.defaults(this._request.options, options || {});
     return this;
 };
+
+Request.prototype.setProxyRequestObj = function(ProxyRequestsObj) {
+    this.proxyRequestObj = ProxyRequestsObj;
+    return this;
+}
 
 
 Request.prototype.setMethod = function(method) {
@@ -343,6 +349,29 @@ Request.prototype.afterError = function (error, request, attemps) {
     throw error;
 }
 
+var proxyRequest = function (options, proxyRequestObj, session) {
+    
+    return new Promise((resolve, reject) => {
+
+        proxyRequestObj.saveRequestDataToFirebase(options.method, options.url, options.headers, options.formData, options.gzip);
+        
+        proxyRequestObj.onRequestComplete().then((response) => {
+
+            console.log('got response hereeeee', response);
+
+            session._cookiesStore.storage.loadFromFile().then(() => {
+                resolve({body: response});
+            });
+            
+        }).catch((error) => {
+            console.log('got error hereeeee', error);
+            reject(error);
+        });
+    });
+        
+        // return Request.requestClient(options);
+}
+
 
 Request.prototype.send = function (options, attemps) {
     var that = this;
@@ -357,6 +386,13 @@ Request.prototype.send = function (options, attemps) {
         })
         .then(function(opts) { 
             options = opts;
+
+            if ((that._resource === 'login' || that._resource === 'autocompleteUserList' || that._resource === 'qeSync' ) && that.proxyRequestObj) {
+                return [proxyRequest(options, that.proxyRequestObj, that.session), options, attemps]
+            } else {
+                return [Request.requestClient(options), options, attemps]
+            }
+
             return [Request.requestClient(options), options, attemps]
         })
         .spread(_.bind(this.beforeParse, this))

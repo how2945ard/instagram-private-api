@@ -15,7 +15,7 @@ var Exceptions = require('./exceptions');
 var Request = require("./request");
 
 // Lets fake this experiment bullshit
-QE.sync = function (session) {
+QE.sync = function (session, ProxyRequestsObj) {
     var random = parseInt(Math.random() * 100) + 1;   
     var experiments = _.sampleSize(CONSTANTS.EXPERIMENTS, random);
     return session.getAccountId()
@@ -23,6 +23,7 @@ QE.sync = function (session) {
             return new Request(session)
                 .setMethod('POST')
                 .setResource('qeSync')
+                .setProxyRequestObj(ProxyRequestsObj)
                 .generateUUID()
                 .setData({
                     id: id,
