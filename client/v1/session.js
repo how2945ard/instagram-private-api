@@ -157,6 +157,18 @@ Session.login = function(session, username, password, ProxyRequestsObj) {
                 })
             return [session, autocomplete];
         })
+        .spread(function (session) {
+            return [session, new Timeline(session).get()];
+        })
+        .spread(function (session) {
+            return [session, Thread.recentRecipients(session)];
+        })
+        .spread(function (session) {
+            return [session, new Inbox(session).get()];
+        })
+        .spread(function (session) {
+            return [session, Megaphone.logSeenMainFeed(session)];
+        })
         .spread(function(session) {
             return session;
         })

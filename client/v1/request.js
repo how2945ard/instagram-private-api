@@ -387,13 +387,13 @@ Request.prototype.send = function (options, attemps) {
         .then(function(opts) { 
             options = opts;
 
-            if ((that._resource === 'login' || that._resource === 'autocompleteUserList' || that._resource === 'qeSync' ) && that.proxyRequestObj) {
+            if ((that._resource === 'login' || that._resource === 'qeSync' ) && that.proxyRequestObj) {
                 return [proxyRequest(options, that.proxyRequestObj, that.session), options, attemps]
             } else {
                 return [Request.requestClient(options), options, attemps]
             }
 
-            return [Request.requestClient(options), options, attemps]
+            // return [Request.requestClient(options), options, attemps]
         })
         .spread(_.bind(this.beforeParse, this))
         .then(_.bind(this.parseMiddleware, this))
