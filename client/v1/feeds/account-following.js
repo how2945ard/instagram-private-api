@@ -2,8 +2,9 @@ var _ = require('lodash');
 var util = require('util');
 var FeedBase = require('./feed-base');
 
-function AccountFollowingFeed(session, accountId, limit) {
+function AccountFollowingFeed(session, accountId, query, limit) {
     this.accountId = accountId;
+    this.query = query;
     this.limit = limit || 7500;
     // Should be enought for 7500 records
     this.timeout = 10 * 60 * 1000;
@@ -22,6 +23,7 @@ AccountFollowingFeed.prototype.get = function () {
         .setMethod('GET')
         .setResource('followingFeed', {
             id: that.accountId,
+            query: that.query,
             maxId: that.getCursor(),
             rankToken: Helpers.generateUUID()
         })

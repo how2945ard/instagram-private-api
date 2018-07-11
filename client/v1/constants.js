@@ -36,8 +36,8 @@ const ROUTES = {
     tagFeed: 'feed/tag/<%= encodeURI(tag) %>/?<%= maxId ? ("max_id=" + maxId + "&") : "" %>rank_token=<%= rankToken %>',
     selfLikedFeed: 'feed/liked/<%= maxId ? ("?max_id=" + maxId) : "" %>',
     locationFeed: 'feed/location/<%= id %>/?<%= maxId ? ("max_id=" + maxId + "&") : "" %>rank_token=<%= rankToken %>',
-    followingFeed: 'friendships/<%= id %>/following/?<%= maxId ? ("max_id=" + maxId + "&") : "" %>rank_token=<%= rankToken %>',
-    followersFeed: 'friendships/<%= id %>/followers/<%= maxId ? ("?max_id=" + maxId) : "" %>',
+    followingFeed: 'friendships/<%= id %>/following/?<%= maxId ? ("max_id=" + maxId + "&") : "" %><%= query ? ("query=" + query + "&") : "" %>rank_token=<%= rankToken %>',
+    followersFeed: 'friendships/<%= id %>/followers/?<%= maxId ? ("?max_id=" + maxId) : "" %><%= query ? ("query=" + query) : "" %>',
     savedFeed: 'feed/saved/<%= maxId ? ("?max_id=" + maxId) : "" %>',
 
     topSearch: 'fbsearch/topsearch/?rank_token=<%= rankToken %>&query=<%= encodeURIComponent(query) %>&context=blended&timezone_offset=10800',

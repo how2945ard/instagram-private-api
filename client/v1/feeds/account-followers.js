@@ -2,8 +2,9 @@ var _ = require('lodash');
 var util = require('util');
 var FeedBase = require('./feed-base');
 
-function AccountFollowersFeed(session, accountId, limit) {
+function AccountFollowersFeed(session, accountId, query, limit) {
     this.accountId = accountId;
+    this.query = query;
     this.limit = limit || Infinity;
     this.timeout = 10 * 60 * 1000;
     FeedBase.apply(this, arguments);
@@ -20,6 +21,7 @@ AccountFollowersFeed.prototype.get = function () {
         .setMethod('GET')
         .setResource('followersFeed', {
             id: that.accountId,
+            query: that.query,
             maxId: that.cursor
         })
         .send()
