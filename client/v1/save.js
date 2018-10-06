@@ -1,51 +1,47 @@
-var Resource = require('./resource');
-var util = require("util");
-var _ = require("lodash");
+const util = require('util');
+const _ = require('lodash');
+const Resource = require('./resource');
 
 
 function Save(session, params) {
-    Resource.apply(this, arguments);
+  Resource.apply(this, arguments);
 }
 
 module.exports = Save;
 util.inherits(Save, Resource);
 
-var Request = require('./request');
+const Request = require('./request');
 
 
 Save.prototype.parseParams = function (json) {
-    return json || {};
+  return json || {};
 };
 
 
-Save.create = function(session, mediaId) {
-    return new Request(session)
-        .setMethod('POST')
-        .setResource('save', {id: mediaId})
-        .generateUUID()
-        .setData({
-            media_id: mediaId,
-            src: "profile"
-        })
-        .signPayload()
-        .send()
-        .then(function(data) {
-            return new Save(session, {});
-        })
-}
+Save.create = function (session, mediaId) {
+  return new Request(session)
+    .setMethod('POST')
+    .setResource('save', { id: mediaId })
+    .generateUUID()
+    .setData({
+      media_id: mediaId,
+      src: 'profile',
+    })
+    .signPayload()
+    .send()
+    .then(data => new Save(session, {}));
+};
 
-Save.destroy = function(session, mediaId) {
-    return new Request(session)
-        .setMethod('POST')
-        .setResource('unsave', {id: mediaId})
-        .generateUUID()
-        .setData({
-            media_id: mediaId,
-            src: "profile"
-        })
-        .signPayload()
-        .send()
-        .then(function(data) {
-            return new Save(session, {});
-        })
-}
+Save.destroy = function (session, mediaId) {
+  return new Request(session)
+    .setMethod('POST')
+    .setResource('unsave', { id: mediaId })
+    .generateUUID()
+    .setData({
+      media_id: mediaId,
+      src: 'profile',
+    })
+    .signPayload()
+    .send()
+    .then(data => new Save(session, {}));
+};

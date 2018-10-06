@@ -32,9 +32,18 @@
     "tough-cookie": "^2.3.3",
     "tough-cookie-filestore": "0.0.1",
     "underscore.string": "^3.3.4",
+    "urlencode": "^1.1.0",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
+    "eslint": "4.10.0",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-config-react-app": "^2.1.0",
+    "eslint-loader": "1.9.0",
+    "eslint-plugin-flowtype": "2.39.1",
+    "eslint-plugin-import": "2.8.0",
+    "eslint-plugin-jsx-a11y": "2.2.3",
+    "eslint-plugin-react": "7.4.0",
     "faker": "^3.1.0",
     "gm": "^1.23.0",
     "image-diff": "^1.6.3",

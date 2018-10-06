@@ -1,72 +1,78 @@
-var util = require("util");
-var _ = require("lodash");
-var Resource = require("./resource");
-var camelKeys = require('camelcase-keys');
+const urlencode = require('urlencode');
+const util = require('util');
+const _ = require('lodash');
+const camelKeys = require('camelcase-keys');
+const Resource = require('./resource');
 
-
-function Hashtag(session, params) { 
-    Resource.apply(this, arguments);
+function Hashtag(session, params) {
+  Resource.apply(this, arguments);
 }
 
 util.inherits(Hashtag, Resource);
 module.exports = Hashtag;
 
-var Request = require('./request');
-var Helpers = require('../../helpers');
+const Request = require('./request');
+const Helpers = require('../../helpers');
 
 
 Hashtag.prototype.parseParams = function (json) {
-  var hash = camelKeys(json);
+  const hash = camelKeys(json);
   hash.mediaCount = parseInt(json.media_count);
-  if(_.isObject(hash.id))
-    hash.id = hash.id.toString();
+  if (_.isObject(hash.id)) hash.id = hash.id.toString();
   return hash;
 };
 
 
 Hashtag.search = function (session, query) {
-    return session.getAccountId()
-        .then(function(id) {
-            var rankToken = Helpers.buildRankToken(id);
-            return new Request(session)
-                .setMethod('GET')
-                .setResource('hashtagsSearch', {
-                    query: query,
-                    rankToken: rankToken
-                })
-                .send();
+  return session.getAccountId()
+    .then((id) => {
+      const rankToken = Helpers.buildRankToken(id);
+      return new Request(session)
+        .setMethod('GET')
+        .setResource('hashtagsSearch', {
+          query: urlencode(query),
+          rankToken,
         })
-        .then(function(data) {
-            return _.map(data.results, function (hashtag) {
-                return new Hashtag(session, hashtag);
-            });
-        });
+        .send();
+    })
+    .then(data => _.map(data.results, hashtag => new Hashtag(session, hashtag)));
 };
 
-Hashtag.related = function(session, tag){
-    return new Request(session)
-        .setMethod('GET')
-        .setResource('hashtagsRelated', {
-            tag: tag,
-            visited: `[{"id":"${tag}","type":"hashtag"}]`,
-            related_types: '["hashtag"]'
-        })
-       .send()
-       .then(function(data) {
-            return _.map(data.related, function (hashtag) {
-                return new Hashtag(session, hashtag);
-            });
-        });
-}
+Hashtag.related = function (session, tag) {
+  tag = urlencode(tag);
+  return new Request(session)
+    .setMethod('GET')
+    .setResource('hashtagsRelated', {
+      tag,
+      visited: `[{"id":"${tag}","type":"hashtag"}]`,
+      related_types: '["hashtag"]',
+    })
+    .send()
+    .then(data => _.map(data.related, hashtag => new Hashtag(session, hashtag)));
+};
 
-Hashtag.info = function(session, tag){
-    return new Request(session)
-        .setMethod('GET')
-        .setResource('hashtagsInfo', {
-            tag: tag
-        })
-       .send()
-       .then(function(hashtag) {
-          return new Hashtag(session, hashtag);
-       });
-}
+Hashtag.info = function (session, tag) {
+  tag = urlencode(tag);
+  return new Request(session)
+    .setMethod('GET')
+    .setResource('hashtagsInfo', {
+      tag,
+    })
+    .send()
+    .then(hashtag => new Hashtag(session, hashtag));
+};
+
+Hashtag.follow = function (session, tag) {
+  tag = urlencode(tag);
+  return new Request(session)
+    .setUrl(`https://i.instagram.com/api/v1/tags/follow/${tag}/`)
+    .setMethod('POST')
+    .generateUUID()
+    .signPayload()
+    .setBodyType('form')
+    .send()
+    .catch((error) => {
+      console.error(error.response);
+      console.error(error.message);
+    });
+};

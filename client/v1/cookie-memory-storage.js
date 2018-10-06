@@ -1,15 +1,15 @@
-var util = require("util");
-var MemoryCookieStore = require('tough-cookie/lib/memstore.js').MemoryCookieStore;
-var CookieStorage = require('./cookie-storage');
+const util = require('util');
+const MemoryCookieStore = require('tough-cookie/lib/memstore.js').MemoryCookieStore;
+const CookieStorage = require('./cookie-storage');
 
 
 function CookieMemoryStorage() {
-    CookieStorage.call(this, new MemoryCookieStore())
+  CookieStorage.call(this, new MemoryCookieStore());
 }
 
 util.inherits(CookieMemoryStorage, CookieStorage);
 module.exports = CookieMemoryStorage;
 
-CookieMemoryStorage.prototype.destroy = function(){
+CookieMemoryStorage.prototype.destroy = function () {
 
-}
+};
