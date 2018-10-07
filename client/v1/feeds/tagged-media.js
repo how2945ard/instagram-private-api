@@ -49,7 +49,7 @@ function getRandomArbitrary(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-const markStoriesAsSeen = function (session, stories, sourceID) {
+const markStoriesAsSeen = function (session, stories, sourceID, id) {
   const reels = {};
   seenAt = Math.floor(new Date() / 1000) - 30;
   _.forEach(stories, (story) => {
@@ -61,7 +61,6 @@ const markStoriesAsSeen = function (session, stories, sourceID) {
     }
     seenAt += getRandomArbitrary(1, 3);
     reels[`${story.pk}_${story.user.pk}_${sourceID}`] = [`${story.taken_at}_${seenAt}`];
-    // reels[`${story.pk}_${story.user.pk}_1538819274298`] = [`${story.taken_at}_${seenAt}`]
   });
   const url = 'https://i.instagram.com/api/v2/media/seen/?reel=1&live_vod=0';
   return new Request(session)
@@ -92,11 +91,8 @@ TaggedMediaFeed.prototype.getStory = function () {
           if (!data.story) {
             return [];
           }
-          return markStoriesAsSeen(that.session, data.story.items, data.story.id)
-            .then(() => _.map(data.story.items, (medium) => {
-              console.log(medium.id);
-              return medium;
-            }));
+          return markStoriesAsSeen(that.session, data.story.items, data.story.id, id)
+            .then(() => _.map(data.story.items, medium => medium));
         });
     });
 };
