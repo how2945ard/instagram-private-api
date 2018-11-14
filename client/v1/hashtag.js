@@ -71,8 +71,4 @@ Hashtag.follow = function (session, tag) {
     .signPayload()
     .setBodyType('form')
     .send()
-    .catch((error) => {
-      console.error(error.response);
-      console.error(error.message);
-    });
 };

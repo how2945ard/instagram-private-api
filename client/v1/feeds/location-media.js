@@ -38,10 +38,6 @@ LocationMediaFeed.prototype.get = function () {
       }
       return _.map(data.items, medium => new Media(that.session, medium));
     })
-    .catch((error) => {
-      console.error(error.message);
-      return [];
-    });
 };
 
 function getRandomArbitrary(min, max) {
@@ -71,10 +67,6 @@ const markStoriesAsSeen = function (session, stories, sourceID, id) {
     .signPayload()
     .setBodyType('form')
     .send()
-    .catch((error) => {
-      console.error(error.message);
-      return [];
-    });
 };
 
 LocationMediaFeed.prototype.getStory = function () {
@@ -98,9 +90,5 @@ LocationMediaFeed.prototype.getStory = function () {
           return markStoriesAsSeen(that.session, data.story.items, data.story.id, id)
             .then(response => _.map(data.story.items, medium => medium));
         })
-        .catch((error) => {
-          console.error(error.message);
-          return [];
-        });
     });
 };

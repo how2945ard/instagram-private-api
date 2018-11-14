@@ -41,10 +41,6 @@ TaggedMediaFeed.prototype.get = function () {
           }
           return _.map(data.items, medium => new Media(that.session, medium));
         })
-        .catch((error) => {
-          console.error(error.message);
-          return [];
-        });
     });
 };
 
@@ -75,10 +71,6 @@ const markStoriesAsSeen = function (session, stories, sourceID, id) {
     .signPayload()
     .setBodyType('form')
     .send()
-    .catch((error) => {
-      console.error(error.message);
-      return [];
-    });
 };
 
 TaggedMediaFeed.prototype.getStory = function () {
@@ -101,9 +93,5 @@ TaggedMediaFeed.prototype.getStory = function () {
           return markStoriesAsSeen(that.session, data.story.items, data.story.id, id)
             .then(() => _.map(data.story.items, medium => medium));
         })
-        .catch((error) => {
-          console.error(error.message);
-          return [];
-        });
     });
 };
